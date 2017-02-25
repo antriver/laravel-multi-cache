@@ -11,7 +11,7 @@ composer require tmd/laravel-multi-cache
 
 Add this to your config/app.php `providers` array:
 ```php
-\Tmd\LaravelMultiCache\MultiStoreServiceProvider::cache
+Tmd\LaravelMultiCache\MultiStoreServiceProvider::class
 ```
 
 Add the `multi` store to your `config/cache.php` `stores` array:
