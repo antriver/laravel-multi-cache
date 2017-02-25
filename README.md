@@ -39,6 +39,11 @@ Add the `multi` store to your `config/cache.php` `stores` array:
     ],
 ```
 
+Set your `CACHE_DRIVER` in `.env`:
+```
+CACHE_DRIVER=multi
+```
+
 ## Usage
 
 The cache implements the standard cache interface, so you use all the normal `get()` and `put()` methods.
