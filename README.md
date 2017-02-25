@@ -30,6 +30,7 @@ Add the `multi` store to your `config/cache.php` `stores` array:
             'connection' => 'redis-cache',
         ],
         'multi' => [
+            'driver' => 'multi',
             'stores' => [
                 'array',
                 'redis',
