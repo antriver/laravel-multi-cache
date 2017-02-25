@@ -45,7 +45,7 @@ The cache implements the standard cache interface, so you use all the normal `ge
 
 ### `get($key)`
 
-Returns the value from the first store `$key` is found in (in the order defines in `stores`). The value will be saved in any higher 'stores'.
+Returns the value from the first store `$key` is found in (in the order defined in `stores`). The value will be saved in any higher 'stores'.
 e.g. If the value is not found it `array`, but is in `redis`, the value from `redis` will be returned and put in `array`, but it will not be put in `database`. 
 
 
