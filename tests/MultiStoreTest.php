@@ -1,28 +1,30 @@
 <?php
 
-namespace Tmd\LaravelRepositories\Tests;
+namespace Antriver\LaravelMultiCacheTests;
 
-use Cache;
+use Antriver\LaravelMultiCache\MultiStore;
+use Antriver\LaravelMultiCache\MultiStoreServiceProvider;
 use Illuminate\Cache\ArrayStore;
 use Illuminate\Cache\CacheManager;
-use Illuminate\Contracts\Cache\Store;
+use Illuminate\Support\Facades\Cache;
 use Orchestra\Testbench\TestCase;
-use Tmd\LaravelMultiCache\MultiStore;
-use Tmd\LaravelMultiCache\MultiStoreServiceProvider;
 
 class MultiStoreTest extends TestCase
 {
-    /**
-     * Define environment setup.
-     *
-     * @param  \Illuminate\Foundation\Application $app
-     *
-     * @return void
-     */
-    protected function getEnvironmentSetUp($app)
+    protected function getApplicationProviders($app)
     {
-        $app['config']->set('cache.default', 'multi');
-        $app['config']->set(
+        return [
+            ...parent::getApplicationProviders($app),
+            MultiStoreServiceProvider::class,
+        ];
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config()->set('cache.default', 'multi');
+        config()->set(
             'cache.stores',
             [
                 'array-primary' => [
@@ -36,20 +38,13 @@ class MultiStoreTest extends TestCase
                     'stores' => [
                         'array-primary',
                         'array-secondary',
-                    ]
+                    ],
                 ],
             ]
         );
     }
 
-    protected function getPackageProviders($app)
-    {
-        return [
-            MultiStoreServiceProvider::class
-        ];
-    }
-
-    public function tearDown()
+    protected function tearDown(): void
     {
         $this->getPrimaryStore()->flush();
         $this->getSecondaryStore()->flush();
@@ -89,7 +84,7 @@ class MultiStoreTest extends TestCase
         $multiStore = new MultiStore(
             app(),
             [
-                'stores' => []
+                'stores' => [],
             ],
             app(CacheManager::class)
         );

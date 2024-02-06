@@ -6,12 +6,12 @@ An example use is to have an array cache and Redis cache. Fetch items from the a
 
 ## Installation
 ```
-composer require tmd/laravel-multi-cache
+composer require antriver/laravel-multi-cache
 ```
 
 Add this to your config/app.php `providers` array:
 ```php
-Tmd\LaravelMultiCache\MultiStoreServiceProvider::class
+Antriver\LaravelMultiCache\MultiStoreServiceProvider::class
 ```
 
 Add the `multi` store to your `config/cache.php` `stores` array:
@@ -52,7 +52,7 @@ The cache implements the standard cache interface, so you use all the normal `ge
 ### `get($key)`
 
 Returns the value from the first store `$key` is found in (in the order defined in `stores`). The value will be saved in any higher 'stores'.
-e.g. If the value is not found it `array`, but is in `redis`, the value from `redis` will be returned and put in `array`, but it will not be put in `database`. 
+e.g. If the value is not found it `array`, but is in `redis`, the value from `redis` will be returned and put in `array`, but it will not be put in `database`.
 
 
 ### `put($key, $value, $minutes)`
