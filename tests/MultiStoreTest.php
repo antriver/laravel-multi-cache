@@ -39,6 +39,7 @@ class MultiStoreTest extends TestCase
                         'array-primary',
                         'array-secondary',
                     ],
+                    'sync_missed_stores' => true,
                 ],
             ]
         );
@@ -257,5 +258,46 @@ class MultiStoreTest extends TestCase
     public function testGetPrefixReturnsEmptyString()
     {
         $this->assertSame('', $this->getMultiStore()->getPrefix());
+    }
+
+    public function testSyncMissedStoresIsFalse()
+    {
+        config()->set('cache.stores.multi.sync_missed_stores', false);
+
+        $this->assertNull($this->getPrimaryStore()->get('hello'));
+
+        $value = uniqid();
+
+        $this->getSecondaryStore()->put('hello', $value, 1);
+
+        $this->assertSame($value, $this->getMultiStore()->get('hello'));
+
+        $this->assertNull($this->getPrimaryStore()->get('hello'));
+    }
+
+    public function testSyncMissedStoresConfigIsMissing()
+    {
+        // Config is first written inside setUp function. Here we overwrite it
+        // so that sync_missed_stores is deleted from config.
+        config()->set(
+            'cache.stores.multi',
+            [
+                'driver' => 'multi',
+                'stores' => [
+                    'array-primary',
+                    'array-secondary',
+                ],
+            ]
+        );
+
+        $this->assertNull($this->getPrimaryStore()->get('hello'));
+
+        $value = uniqid();
+
+        $this->getSecondaryStore()->put('hello', $value, 1);
+
+        $this->assertSame($value, $this->getMultiStore()->get('hello'));
+
+        $this->assertSame($value, $this->getPrimaryStore()->get('hello'));
     }
 }

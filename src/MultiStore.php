@@ -38,6 +38,11 @@ class MultiStore implements Store
     protected $cacheManager;
 
     /**
+     * @var bool
+     */
+    protected $syncMissedStores = true;
+
+    /**
      * MultiStore constructor.
      *
      * @param Application  $app
@@ -51,6 +56,7 @@ class MultiStore implements Store
         $this->app = $app;
         $this->config = $config;
         $this->cacheManager = $cacheManager;
+        $this->syncMissedStores = !isset($config['sync_missed_stores']) || $config['sync_missed_stores'];
 
         if (empty($config['stores'])) {
             throw new Exception("No stores are defined for multi cache.");
@@ -97,7 +103,7 @@ class MultiStore implements Store
             if (($value = $store->get($key)) !== null) {
                 $foundValue = $value;
                 break;
-            } else {
+            } else if ($this->syncMissedStores) {
                 $missedStores[] = $store;
             }
         }
