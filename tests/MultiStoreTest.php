@@ -274,4 +274,30 @@ class MultiStoreTest extends TestCase
 
         $this->assertNull($this->getPrimaryStore()->get('hello'));
     }
+
+    public function testSyncMissedStoresConfigIsMissing()
+    {
+        // Config is first written inside setUp function. Here we overwrite it
+        // so that sync_missed_stores is deleted from config.
+        config()->set(
+            'cache.stores.multi',
+            [
+                'driver' => 'multi',
+                'stores' => [
+                    'array-primary',
+                    'array-secondary',
+                ],
+            ]
+        );
+
+        $this->assertNull($this->getPrimaryStore()->get('hello'));
+
+        $value = uniqid();
+
+        $this->getSecondaryStore()->put('hello', $value, 1);
+
+        $this->assertSame($value, $this->getMultiStore()->get('hello'));
+
+        $this->assertSame($value, $this->getPrimaryStore()->get('hello'));
+    }
 }

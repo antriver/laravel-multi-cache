@@ -56,7 +56,7 @@ class MultiStore implements Store
         $this->app = $app;
         $this->config = $config;
         $this->cacheManager = $cacheManager;
-        $this->syncMissedStores = $config['sync_missed_stores'];
+        $this->syncMissedStores = !isset($config['sync_missed_stores']) || $config['sync_missed_stores'];
 
         if (empty($config['stores'])) {
             throw new Exception("No stores are defined for multi cache.");
