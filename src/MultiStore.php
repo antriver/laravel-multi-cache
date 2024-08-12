@@ -38,6 +38,11 @@ class MultiStore implements Store
     protected $cacheManager;
 
     /**
+     * @var string
+     */
+    protected $prefix;
+
+    /**
      * MultiStore constructor.
      *
      * @param Application  $app
@@ -61,6 +66,8 @@ class MultiStore implements Store
         }
 
         $this->storeCount = count($this->stores);
+
+        $this->prefix = $config['prefix'] ?? '';
     }
 
     /**
@@ -222,6 +229,6 @@ class MultiStore implements Store
      */
     public function getPrefix()
     {
-        return '';
+        return $this->prefix;
     }
 }
