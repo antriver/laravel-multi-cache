@@ -67,7 +67,7 @@ class MultiStore implements Store
 
         $this->storeCount = count($this->stores);
 
-        $this->prefix = $config['prefix'] ?? '';
+        $this->setPrefix($config['prefix'] ?? '');
     }
 
     /**
@@ -101,7 +101,7 @@ class MultiStore implements Store
         $foundValue = null;
 
         foreach ($this->stores as $name => $store) {
-            if (($value = $store->get($key)) !== null) {
+            if (($value = $store->get($this->prefix . $key)) !== null) {
                 $foundValue = $value;
                 break;
             } else {
@@ -112,7 +112,7 @@ class MultiStore implements Store
         if ($foundValue) {
             foreach ($missedStores as $store) {
                 // Remember in the higher cache store for 1 day.
-                $store->put($key, $foundValue, 1440);
+                $store->put($this->prefix . $key, $foundValue, 1440);
             }
         }
 
@@ -129,7 +129,7 @@ class MultiStore implements Store
     public function put($key, $value, $minutes)
     {
         foreach ($this->stores as $store) {
-            $store->put($key, $value, $minutes);
+            $store->put($this->prefix . $key, $value, $minutes);
         }
     }
 
@@ -146,7 +146,7 @@ class MultiStore implements Store
         $returnValue = null;
 
         foreach ($this->stores as $store) {
-            $returnValue = $store->increment($key, $value);
+            $returnValue = $store->increment($this->prefix . $key, $value);
         }
 
         return $returnValue;
@@ -165,7 +165,7 @@ class MultiStore implements Store
         $returnValue = null;
 
         foreach ($this->stores as $store) {
-            $returnValue = $store->decrement($key, $value);
+            $returnValue = $store->decrement($this->prefix . $key, $value);
         }
 
         return $returnValue;
@@ -180,7 +180,7 @@ class MultiStore implements Store
     public function forever($key, $value)
     {
         foreach ($this->stores as $store) {
-            $store->forever($key, $value);
+            $store->forever($this->prefix . $key, $value);
         }
     }
 
@@ -196,7 +196,7 @@ class MultiStore implements Store
         $forgotten = 0;
 
         foreach ($this->stores as $store) {
-            if ($store->forget($key)) {
+            if ($store->forget($this->prefix . $key)) {
                 ++$forgotten;
             }
         }
@@ -230,5 +230,16 @@ class MultiStore implements Store
     public function getPrefix()
     {
         return $this->prefix;
+    }
+
+    /**
+     * Set the cache key prefix.
+     *
+     * @param  string  $prefix
+     * @return void
+     */
+    public function setPrefix($prefix)
+    {
+        $this->prefix = $prefix;
     }
 }
