@@ -99,7 +99,7 @@ class MultiStore implements Store
 
         $foundValue = null;
 
-        foreach ($this->stores as $name => $store) {
+        foreach ($this->stores as $store) {
             if (($value = $store->get($key)) !== null) {
                 $foundValue = $value;
                 break;
@@ -111,7 +111,7 @@ class MultiStore implements Store
         if ($foundValue && $this->syncMissedStores) {
             foreach ($missedStores as $store) {
                 // Remember in the higher cache store for 1 day.
-                $store->put($key, $foundValue, 1440);
+                $store->put($key, $foundValue, 86400);
             }
         }
 
@@ -123,12 +123,12 @@ class MultiStore implements Store
      *
      * @param  string    $key
      * @param  mixed     $value
-     * @param  float|int $minutes
+     * @param  float|int $seconds
      */
-    public function put($key, $value, $minutes)
+    public function put($key, $value, $seconds)
     {
         foreach ($this->stores as $store) {
-            $store->put($key, $value, $minutes);
+            $store->put($key, $value, $seconds);
         }
     }
 
