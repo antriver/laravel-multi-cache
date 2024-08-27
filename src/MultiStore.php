@@ -103,12 +103,12 @@ class MultiStore implements Store
             if (($value = $store->get($key)) !== null) {
                 $foundValue = $value;
                 break;
-            } else if ($this->syncMissedStores) {
+            } else {
                 $missedStores[] = $store;
             }
         }
 
-        if ($foundValue) {
+        if ($foundValue && $this->syncMissedStores) {
             foreach ($missedStores as $store) {
                 // Remember in the higher cache store for 1 day.
                 $store->put($key, $foundValue, 1440);
