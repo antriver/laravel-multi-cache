@@ -1,0 +1,29 @@
+name: pipeline
+
+# https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions#concurrency
+concurrency:
+  group: ${{ github.ref_name }}
+  cancel-in-progress: true
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        with:
+          php_version: 8.1
+
+      - name: Fix vendor permissions
+        run: sudo chown -R $USER:$USER $GITHUB_WORKSPACE/vendor
+
+      - name: Run tests
+        run: vendor/bin/phpunit
