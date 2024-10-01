@@ -9,7 +9,7 @@ An example use is to have an array cache and Redis cache. Fetch items from the a
 composer require antriver/laravel-multi-cache
 ```
 
-Add this to your config/app.php `providers` array:
+The service provider will autoload, if you have disabled this add this to your config/app.php `providers` array:
 ```php
 Antriver\LaravelMultiCache\MultiStoreServiceProvider::class
 ```
