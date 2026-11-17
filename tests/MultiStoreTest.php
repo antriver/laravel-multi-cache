@@ -173,6 +173,27 @@ class MultiStoreTest extends TestCase
         $this->assertSame($value, $this->getSecondaryStore()->get('hello'));
     }
 
+    public function testPutReturnsTrue()
+    {
+        $this->assertTrue($this->getMultiStore()->put('hello', 'world', 1));
+    }
+
+    /**
+     * The PSR-16 set() and setMultiple() methods are typed to return bool, so they fail if put() returns nothing.
+     */
+    public function testSetAndSetMultipleReturnTrue()
+    {
+        $this->assertTrue($this->getMultiStore()->set('hello', 'world', 1));
+        $this->assertTrue($this->getMultiStore()->setMultiple(['a' => 1, 'b' => 2], 1));
+
+        $this->assertSame(2, $this->getSecondaryStore()->get('b'));
+    }
+
+    public function testForeverReturnsTrue()
+    {
+        $this->assertTrue($this->getMultiStore()->forever('hello', 'world'));
+    }
+
     /**
      * Testing storing a value stores it in all stores.
      */
