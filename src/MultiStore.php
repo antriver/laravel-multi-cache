@@ -127,9 +127,12 @@ class MultiStore implements Store
      */
     public function put($key, $value, $seconds)
     {
+        $success = true;
         foreach ($this->stores as $store) {
-            $store->put($key, $value, $seconds);
+            $success = $store->put($key, $value, $seconds) && $success;
         }
+
+        return $success;
     }
 
     /**
@@ -178,9 +181,12 @@ class MultiStore implements Store
      */
     public function forever($key, $value)
     {
+        $success = true;
         foreach ($this->stores as $store) {
-            $store->forever($key, $value);
+            $success = $store->forever($key, $value) && $success;
         }
+
+        return $success;
     }
 
     /**

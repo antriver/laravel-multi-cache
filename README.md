@@ -24,7 +24,7 @@ The package major version matches the newest Laravel major it supports, and each
 
 Laravel 10 and 11 no longer receive security fixes, so new projects should use Laravel 12 or 13.
 
-Add this to your config/app.php `providers` array:
+The service provider is registered automatically by package discovery. If you have disabled discovery, add it to the `providers` array in `config/app.php` (Laravel 10) or `bootstrap/providers.php` (Laravel 11+):
 ```php
 Antriver\LaravelMultiCache\MultiStoreServiceProvider::class
 ```
