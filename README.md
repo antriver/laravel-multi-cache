@@ -9,6 +9,21 @@ An example use is to have an array cache and Redis cache. Fetch items from the a
 composer require antriver/laravel-multi-cache
 ```
 
+## Version support
+
+The package major version matches the newest Laravel major it supports, and each release supports as many earlier Laravel versions as it can still test.
+
+| Package | Laravel | PHP |
+|---|---|---|
+| 13.x | 10.x, 11.x, 12.x, 13.x | 8.3+ |
+| 10.1.x | 10.x, 11.x | 8.1+ |
+| 10.0.x | 10.x | 7.4+ |
+| 1.x | 5.x | |
+
+13.x requires the same PHP version as Laravel 13. CI tests every PHP version from 8.3 to 8.5 with every Laravel version.
+
+Laravel 10 and 11 no longer receive security fixes, so new projects should use Laravel 12 or 13.
+
 Add this to your config/app.php `providers` array:
 ```php
 Antriver\LaravelMultiCache\MultiStoreServiceProvider::class

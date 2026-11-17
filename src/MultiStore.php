@@ -184,6 +184,28 @@ class MultiStore implements Store
     }
 
     /**
+     * Sets the expiration of an item in all of the stores.
+     * Returns true if the item was found in at least one store, because get() can still return it.
+     *
+     * @param  string $key
+     * @param  int    $seconds
+     *
+     * @return bool
+     */
+    public function touch($key, $seconds)
+    {
+        $touched = false;
+
+        foreach ($this->stores as $store) {
+            if ($store->touch($key, $seconds)) {
+                $touched = true;
+            }
+        }
+
+        return $touched;
+    }
+
+    /**
      * Remove an item from the cache.
      *
      * @param  string $key

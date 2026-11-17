@@ -11,19 +11,39 @@ on:
 
 jobs:
   test:
+    name: "PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}"
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { php: '8.3.36', laravel: '^10.0', testbench: '^8.19' }
+          - { php: '8.4.27', laravel: '^10.0', testbench: '^8.19' }
+          - { php: '8.5.12', laravel: '^10.0', testbench: '^8.19' }
+          - { php: '8.3.36', laravel: '^11.0', testbench: '^9.0' }
+          - { php: '8.4.27', laravel: '^11.0', testbench: '^9.0' }
+          - { php: '8.5.12', laravel: '^11.0', testbench: '^9.0' }
+          - { php: '8.3.36', laravel: '^12.0', testbench: '^10.0' }
+          - { php: '8.4.27', laravel: '^12.0', testbench: '^10.0' }
+          - { php: '8.5.12', laravel: '^12.0', testbench: '^10.0' }
+          - { php: '8.3.36', laravel: '^13.0', testbench: '^11.0' }
+          - { php: '8.4.27', laravel: '^13.0', testbench: '^11.0' }
+          - { php: '8.5.12', laravel: '^13.0', testbench: '^11.0' }
+
     runs-on: ubuntu-latest
+    container: antriver/php:${{ matrix.php }}-cli
+    env:
+      # Every Laravel 10.x and 11.x release has a published security advisory, so Composer refuses to install them without this
+      COMPOSER_NO_SECURITY_BLOCKING: 1
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install dependencies
-        uses: php-actions/composer@v6
-        with:
-          php_version: 8.1
-
-      - name: Fix vendor permissions
-        run: sudo chown -R $USER:$USER $GITHUB_WORKSPACE/vendor
+        run: |
+          composer require --no-update --no-interaction "laravel/framework:${{ matrix.laravel }}"
+          composer require --dev --no-update --no-interaction "orchestra/testbench:${{ matrix.testbench }}"
+          composer update --with-all-dependencies --no-interaction --prefer-dist
 
       - name: Run tests
-        run: vendor/bin/phpunit
+        run: composer test

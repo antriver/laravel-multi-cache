@@ -49,6 +49,8 @@ class MultiStoreTest extends TestCase
     {
         $this->getPrimaryStore()->flush();
         $this->getSecondaryStore()->flush();
+
+        parent::tearDown();
     }
 
     /**
@@ -253,6 +255,50 @@ class MultiStoreTest extends TestCase
         $this->assertNull($this->getPrimaryStore()->get('hello'));
         $this->assertNull($this->getPrimaryStore()->get('goodbye'));
         $this->assertNull($this->getSecondaryStore()->get('hello'));
+    }
+
+    /**
+     * Skips the test on Laravel versions whose cache repository has no touch() method.
+     */
+    protected function requireTouch()
+    {
+        if (!method_exists(\Illuminate\Cache\Repository::class, 'touch')) {
+            $this->markTestSkipped('Cache touch() needs Laravel 13+');
+        }
+    }
+
+    /**
+     * Touch should extend the expiration in all stores.
+     */
+    public function testTouch()
+    {
+        $this->requireTouch();
+        $this->getPrimaryStore()->put('hello', 'world1', 1);
+        $this->getSecondaryStore()->put('hello', 'world2', 1);
+
+        $this->assertTrue($this->getMultiStore()->touch('hello', 60));
+        $this->travel(30)->seconds();
+
+        $this->assertSame('world1', $this->getPrimaryStore()->get('hello'));
+        $this->assertSame('world2', $this->getSecondaryStore()->get('hello'));
+    }
+
+    public function testTouchReturnsTrueWhenOnlyInSecondary()
+    {
+        $this->requireTouch();
+        $this->getSecondaryStore()->put('hello', 'world', 1);
+
+        $this->assertTrue($this->getMultiStore()->touch('hello', 60));
+        $this->travel(30)->seconds();
+
+        $this->assertSame('world', $this->getSecondaryStore()->get('hello'));
+    }
+
+    public function testTouchReturnsFalseWhenMissing()
+    {
+        $this->requireTouch();
+
+        $this->assertFalse($this->getMultiStore()->touch('hello', 60));
     }
 
     public function testGetPrefixReturnsEmptyString()
